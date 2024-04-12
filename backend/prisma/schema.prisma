@@ -1,0 +1,344 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  OWNER
+  ADMIN
+  ADVISOR
+  MECHANIC
+  CASHIER
+  SUPPLIER_ADMIN
+  SUPPLIER_SALES
+  SUPPLIER_WAREHOUSE
+  POS_OPERATOR
+}
+
+enum UserStatus {
+  INVITED
+  ACTIVE
+  SUSPENDED
+}
+
+enum TenantType {
+  SERVICE_STATION
+  SUPPLIER
+}
+
+enum JobStatus {
+  DRAFT
+  AWAITING_INSPECTION
+  QUOTATION_IN_PROGRESS
+  AWAITING_CUSTOMER_APPROVAL
+  APPROVED
+  IN_PROGRESS
+  WAITING_FOR_PARTS
+  PARTS_RECEIVED
+  COMPLETED
+  INVOICED
+  PAID
+  READY_FOR_COLLECTION
+  COLLECTED
+  CLOSED
+  CANCELLED
+}
+
+enum QuoteStatus {
+  DRAFT
+  SENT
+  VIEWED
+  APPROVED
+  REJECTED
+  EXPIRED
+  SUPERSEDED
+}
+
+enum PartStatus {
+  REQUIRED
+  PENDING_APPROVAL
+  READY_TO_ORDER
+  ORDERED
+  SHIPPED
+  RECEIVED
+  INSTALLED
+  RETURNED
+  CANCELLED
+}
+
+enum NotificationChannel {
+  EMAIL
+  SMS
+  WHATSAPP
+  IN_APP
+}
+
+model Tenant {
+  id                           String               @id @default(cuid())
+  name                         String
+  slug                         String               @unique
+  type                         TenantType
+  isActive                     Boolean              @default(true)
+  contactEmail                 String?
+  contactPhone                 String?
+  legalName                    String?
+  registrationNumber           String?
+  defaultBranchId              String?
+  timezone                     String               @default("Africa/Johannesburg")
+  currencyCode                 String               @default("ZAR")
+  countryCode                  String               @default("ZA")
+  taxRatePercent               Decimal              @default(15) @db.Decimal(5,2)
+  dateFormat                   String               @default("YYYY-MM-DD")
+  requirePaymentBeforeCollection Boolean            @default(true)
+  createdAt                    DateTime             @default(now())
+  updatedAt                    DateTime             @updatedAt
+  branches                     Branch[]
+  users                        User[]
+  customers                    Customer[]
+  vehicles                     Vehicle[]
+  jobs                         Job[]
+  authSessions                 AuthSession[]
+  passwordResetTokens          PasswordResetToken[]
+}
+
+model Branch {
+  id        String   @id @default(cuid())
+  tenantId  String
+  name      String
+  city      String?
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  users     User[]
+}
+
+model User {
+  id                  String               @id @default(cuid())
+  tenantId            String
+  branchId            String?
+  fullName            String
+  firstName           String
+  lastName            String
+  email               String               @unique
+  phone               String?
+  title               String?
+  passwordHash        String
+  role                UserRole
+  status              UserStatus           @default(ACTIVE)
+  isActive            Boolean              @default(true)
+  inviteAcceptedAt    DateTime?
+  lastLoginAt         DateTime?
+  locale              String?
+  timezone            String?
+  defaultBranchId     String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  tenant              Tenant               @relation(fields: [tenantId], references: [id])
+  branch              Branch?              @relation(fields: [branchId], references: [id])
+  authSessions        AuthSession[]
+  passwordResetTokens PasswordResetToken[]
+}
+
+model Customer {
+  id                            String    @id @default(cuid())
+  tenantId                      String
+  fullName                      String
+  mobileNumber                  String
+  alternateNumber               String?
+  email                         String?
+  address                       String?
+  companyName                   String?
+  taxNumber                     String?
+  preferredCommunicationChannel String?
+  marketingConsent              Boolean   @default(false)
+  createdAt                     DateTime  @default(now())
+  updatedAt                     DateTime  @updatedAt
+  tenant                        Tenant    @relation(fields: [tenantId], references: [id])
+  vehicles                      Vehicle[]
+  jobs                          Job[]
+}
+
+model Vehicle {
+  id                 String    @id @default(cuid())
+  tenantId           String
+  customerId         String
+  registrationNumber String
+  vin                String?
+  make               String
+  model              String
+  variant            String?
+  year               Int?
+  engineType         String?
+  fuelType           String?
+  transmission       String?
+  odometer           Int?
+  color              String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  tenant             Tenant    @relation(fields: [tenantId], references: [id])
+  customer           Customer  @relation(fields: [customerId], references: [id])
+  jobs               Job[]
+}
+
+model Job {
+  id                    String            @id @default(cuid())
+  tenantId              String
+  customerId            String
+  vehicleId             String
+  assignedMechanicId    String?
+  referenceNumber       String            @unique
+  status                JobStatus
+  customerComplaint     String
+  diagnosisSummary      String?
+  estimatedCompletionAt DateTime?
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+  tenant                Tenant            @relation(fields: [tenantId], references: [id])
+  customer              Customer          @relation(fields: [customerId], references: [id])
+  vehicle               Vehicle           @relation(fields: [vehicleId], references: [id])
+  inspections           Inspection[]
+  quotes                Quote[]
+  partRequests          PartRequest[]
+  invoices              Invoice[]
+  notifications         Notification[]
+  statusHistory         JobStatusHistory[]
+}
+
+model Inspection {
+  id                String   @id @default(cuid())
+  tenantId          String
+  jobId             String
+  summary           String
+  severity          String?
+  isCustomerVisible Boolean  @default(false)
+  createdByUserId   String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  job               Job      @relation(fields: [jobId], references: [id])
+}
+
+model Quote {
+  id             String      @id @default(cuid())
+  tenantId       String
+  jobId          String
+  version        Int
+  status         QuoteStatus
+  subtotal       Decimal     @db.Decimal(10,2)
+  taxAmount      Decimal     @db.Decimal(10,2)
+  discountAmount Decimal     @db.Decimal(10,2)
+  total          Decimal     @db.Decimal(10,2)
+  publicToken    String?     @unique
+  approvedAt     DateTime?
+  rejectedAt     DateTime?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  job            Job         @relation(fields: [jobId], references: [id])
+  lines          QuoteLine[]
+}
+
+model QuoteLine {
+  id          String   @id @default(cuid())
+  quoteId     String
+  type        String
+  description String
+  quantity    Decimal  @db.Decimal(10,2)
+  unitPrice   Decimal  @db.Decimal(10,2)
+  total       Decimal  @db.Decimal(10,2)
+  quote       Quote    @relation(fields: [quoteId], references: [id])
+}
+
+model PartRequest {
+  id                String     @id @default(cuid())
+  tenantId          String
+  jobId             String
+  description       String
+  quantity          Int
+  costPrice         Decimal?   @db.Decimal(10,2)
+  sellPrice         Decimal?   @db.Decimal(10,2)
+  supplierReference String?
+  etaDate           DateTime?
+  status            PartStatus
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+  job               Job        @relation(fields: [jobId], references: [id])
+}
+
+model Invoice {
+  id             String     @id @default(cuid())
+  tenantId       String
+  jobId          String
+  invoiceNumber  String     @unique
+  subtotal       Decimal    @db.Decimal(10,2)
+  taxAmount      Decimal    @db.Decimal(10,2)
+  total          Decimal    @db.Decimal(10,2)
+  balanceDue     Decimal    @db.Decimal(10,2)
+  status         String
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  job            Job        @relation(fields: [jobId], references: [id])
+  payments       Payment[]
+}
+
+model Payment {
+  id            String   @id @default(cuid())
+  tenantId      String
+  invoiceId     String
+  amount        Decimal  @db.Decimal(10,2)
+  paymentMethod String
+  paidAt        DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  invoice       Invoice  @relation(fields: [invoiceId], references: [id])
+}
+
+model Notification {
+  id         String              @id @default(cuid())
+  tenantId   String
+  jobId      String
+  channel    NotificationChannel
+  eventType  String
+  status     String
+  payload    Json?
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+  job        Job                 @relation(fields: [jobId], references: [id])
+}
+
+model JobStatusHistory {
+  id              String   @id @default(cuid())
+  jobId           String
+  fromStatus      String?
+  toStatus        String
+  changedByUserId String
+  createdAt       DateTime @default(now())
+  job             Job      @relation(fields: [jobId], references: [id])
+}
+
+model AuthSession {
+  id           String   @id @default(cuid())
+  userId       String
+  tenantId     String
+  refreshToken String   @unique
+  createdAt    DateTime @default(now())
+  expiresAt    DateTime
+  revokedAt    DateTime?
+  user         User     @relation(fields: [userId], references: [id])
+  tenant       Tenant   @relation(fields: [tenantId], references: [id])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  tenantId  String
+  token     String   @unique
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  usedAt    DateTime?
+  user      User     @relation(fields: [userId], references: [id])
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+}
