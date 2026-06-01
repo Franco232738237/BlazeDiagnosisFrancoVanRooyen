@@ -77,3 +77,29 @@ Expected workflow:
 ## Security Rule
 
 Never commit passwords, API keys, database URLs, tokens, `.env` files, personal credentials, or private customer information.
+
+## Student MVP Planning Update
+
+This repository now includes student-ready MVP planning material grouped for:
+
+- Software Engineering 1
+- Software Engineering 2
+- Software Development 1
+- Software Development 2
+- Cloud Administration
+- Cyber Security
+
+Start with:
+
+- `STUDENT_START_HERE.md`
+- `docs/training/FIRST_WEEK_BLAZE_DIAGNOSTICS_TECH_STACK.md`
+- `docs/backlog/MVP_BACKLOG_BY_GROUP.md`
+- `docs/backlog/MVP_USER_STORIES.md`
+
+Cloud Administration students should also read:
+
+- `docs/cloud/CLOUD_ADMINISTRATION_MVP_TASKS.md`
+
+Cyber Security students should also read:
+
+- `docs/security/CYBER_SECURITY_MVP_TASKS.md`

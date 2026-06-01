@@ -61,3 +61,16 @@ Never commit passwords, API keys, access tokens, personal credentials, `.env` fi
 ## Current Technical Note
 
 The existing backend currently uses Prisma with PostgreSQL. Earlier planning referenced Drizzle ORM. Before assigning database implementation work, mentors should confirm whether the project will continue with Prisma or migrate to Drizzle. See `docs/technical/ORM_DECISION_NOTE.md`.
+
+## Updated MVP Planning Documents
+
+New MVP planning documents have been added:
+
+- `docs/backlog/MVP_BACKLOG_BY_GROUP.md`
+- `docs/backlog/MVP_USER_STORIES.md`
+- `docs/backlog/STARTER_GITHUB_ISSUES.md`
+- `docs/training/FIRST_WEEK_BLAZE_DIAGNOSTICS_TECH_STACK.md`
+- `docs/cloud/CLOUD_ADMINISTRATION_MVP_TASKS.md`
+- `docs/security/CYBER_SECURITY_MVP_TASKS.md`
+
+Students should read the documents relevant to their group before starting implementation work.

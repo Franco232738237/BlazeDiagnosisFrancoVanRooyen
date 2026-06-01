@@ -1,0 +1,52 @@
+name: MVP starter task
+description: Starter MVP implementation or documentation task for Blaze Diagnostics interns
+title: "[MVP] "
+labels: ["mvp", "student-task", "needs-review"]
+body:
+  - type: dropdown
+    id: group
+    attributes:
+      label: Student Group
+      options:
+        - Software Engineering 1
+        - Software Engineering 2
+        - Software Development 1
+        - Software Development 2
+        - Cloud Administration
+        - Cyber Security
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Task Description
+      description: Describe what needs to be completed.
+    validations:
+      required: true
+  - type: textarea
+    id: checklist
+    attributes:
+      label: Checklist
+      description: List clear steps for the student.
+      value: |
+        - [ ] Read relevant documentation
+        - [ ] Confirm understanding of the task
+        - [ ] Create a branch
+        - [ ] Complete the work
+        - [ ] Test or review the work
+        - [ ] Commit with a clear message
+        - [ ] Push and open a pull request if required
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: How will we know the task is complete?
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes / Blockers
+      description: Add any questions, blockers, or assumptions.
