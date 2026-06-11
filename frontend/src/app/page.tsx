@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { AppShell } from '../components/layout/AppShell';
+import { AppShell } from '../components/layout';
 import { DashboardPanel } from '../features/dashboard/components/DashboardPanel';
 import { CustomersPanel } from '../features/customers/components/CustomersPanel';
 import { VehiclesPanel } from '../features/vehicles/components/VehiclesPanel';
