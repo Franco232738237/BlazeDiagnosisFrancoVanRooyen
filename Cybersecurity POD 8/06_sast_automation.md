@@ -10,3 +10,7 @@ This document maps out the deployment plan to transition Blaze Diagnostics away 
 To secure backend authentication configurations, automated gating mechanisms must stop credential leaks before they ever reach a remote server.
 * **Tooling Implementation:** Deploy **TruffleHog** or **GitLeaks** scanning nodes coupled with **Husky** git hooks directly into the development workspace configuration.
 * **Pre-Commit Enforcement Protocol:** When a developer executes a localized `git commit` command, the internal hooks instantly scan the modified code blocks. If the parser intercepts raw connection parameters (`postgresql://`), explicit admin values, or plaintext signing keys, the commit execution is automatically aborted. The developer is barred from pushing the patch until the configuration environment parameters are properly scrubbed and abstracted to a secure `.env` reference.
+## Roles 
+* **Owner:** JW Blignaut
+* **Lead:** Gerrit Dry
+* **Reviewer:** Ruvan de Klerk
