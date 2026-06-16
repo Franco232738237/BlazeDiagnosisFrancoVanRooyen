@@ -18,6 +18,15 @@ export async function GET(
     );
   }
 
-  const DB=listVehiclesForCustomer(tenantId, id)
-  return NextResponse.json(DB)
+  //Added try-catch block to handle potential errors when fetching vehicles for the customer.
+
+try {
+    const DB= await listVehiclesForCustomer(tenantId, id)
+    return NextResponse.json(DB)
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Failed to fetch vehicles for the customer' },
+      { status: 500 },
+    );
+  }
 }
