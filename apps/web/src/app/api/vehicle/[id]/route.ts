@@ -17,4 +17,7 @@ export async function GET(
       { status: 400 },
     );
   }
+
+  const DB=listVehiclesForCustomer(tenantId, id)
+  return NextResponse.json(DB)
 }
