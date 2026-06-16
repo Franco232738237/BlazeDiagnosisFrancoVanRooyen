@@ -3,6 +3,7 @@ import {
   pgTable,
   text,
   timestamp,
+  boolean, // added boolean at import to make the type work
   uuid,
   varchar,
 } from 'drizzle-orm/pg-core';
@@ -32,7 +33,9 @@ export const customers = pgTable(
     updatedAt: timestamp('updated_at', { withTimezone: true })
       .defaultNow()
       .notNull(),
-      // Soft delete column
+    isArchived: boolean('is_archived')
+      .default(false)
+      .notNull(),
   },
   (table) => [
     index('customers_tenant_email_idx').on(table.tenantId, table.email),
