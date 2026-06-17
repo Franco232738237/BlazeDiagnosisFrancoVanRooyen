@@ -1,21 +1,17 @@
 import { AppShell } from '@/components/common/app-shell';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { StatCard } from '@/components/common/stat-card';
 import { CustomerList } from '@/components/Customer/Customer-list';
 
-export default function Page() {
+export default function CustomerDashboardPage() {
   return (
-    <AppShell surface="station" title="Customers">
-      <Card>
-        <CardHeader>
-          <CardTitle>Customers</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <CustomerList />
-          <p className="text-sm text-neutral-600">
-            Tenant customer management and customer search.
-          </p>
-        </CardContent>
-      </Card>
+    <AppShell title="Customer dashboard" surface="customer">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <StatCard label="Active services" value="1" />
+        <StatCard label="Quotes awaiting approval" value="1" />
+        <StatCard label="Open invoices" value="0" />
+        <StatCard label="Vehicles" value="2" />
+      </div>
+      <CustomerList/>
     </AppShell>
   );
 }
