@@ -45,7 +45,10 @@ export async function PATCH(
   }
 
   try {
-    
+    const input = await request.json();
+    const validatedInput = updateCustomerSchema.parse(input);
+    const ProsedIput = await updateCustomer(tenantId, id, validatedInput)
+    return NextResponse.json(ProsedIput)
   }
   catch (error)
   {
