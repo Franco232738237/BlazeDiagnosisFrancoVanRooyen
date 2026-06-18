@@ -2,7 +2,12 @@
 import  {AppShell}  from '@/components/common/app-shell' ;
 import React, { useState } from "react"
 
-
+//TypeScript interface that defines the shape of a Vehicle object. In plain terms, it’s a contract that says: “Any object of type 
+// Vehicle must have these properties, and they must be strings.” The required fields are customerId, registrationNumber, make, model,
+// and vin, which means every vehicle must include those values. The optional fields, marked with a ?, like variant, year, engineType, 
+// fuelType, transmission, odometer, and color, can be left out if they’re not relevant. This helps TypeScript catch errors early by 
+// ensuring that when you create or update a vehicle, you’re using the correct property names and types, and it makes your code more 
+// predictable and easier to maintain.
 interface Vehicle {
     customerId: string;
     registrationNumber: string;
@@ -33,6 +38,10 @@ const VehicleForm: React.FC = () => {
         odometer: "",
         color: ""
     })
+
+//This code gives your form its behavior. The handleChange function updates the vehicle state whenever you type into an input or
+//  select a value, making sure only the field you changed is replaced while the rest stay the same. The handleSubmit function runs 
+// when you press the submit button, stopping the page from refreshing and then working with the current vehicle data.    
 const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -45,7 +54,10 @@ const handleChange = (
     console.log("Vehicle submitted:", vehicle);
     // TODO: integrate with backend API
   };
-
+//This return block renders your vehicle form inside the app’s layout. The <AppShell> provides the global frame, and inside it the 
+//<form> contains all the input fields tied to the vehicle state. Each field updates through handleChange, while pressing the submit
+//button triggers handleSubmit to stop the page refresh and work with the current vehicle data. In short, it’s a styled, controlled
+//form for adding vehicle details, wrapped in your app’s layout.
   return (
   <AppShell>
     <form
