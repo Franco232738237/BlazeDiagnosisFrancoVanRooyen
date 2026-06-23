@@ -2,6 +2,7 @@
 
 import { requestJson } from '@/lib/apiClient';
 import { useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 import { StatusBadge } from '@/components/common/statusBadge';
 import {
@@ -20,6 +21,7 @@ import {
 import { Input } from '@/components/ui/input';
 
 import type { VehicleRecord } from '@/types/vehicles';
+import type { Route } from 'next';
 
 const statusTone: Record<
   VehicleRecord['status'],
@@ -35,6 +37,7 @@ export function VehicleList() {
   const [vehicles, setVehicles] = useState<VehicleRecord[]>([]); // added
   const [loading, setLoading] = useState(true); // added
   const [error, setError] = useState<string | null>(null); //added
+  const router = useRouter();
 
   // added: fetch real vehicles on mount
   useEffect(() => {
@@ -147,7 +150,7 @@ export function VehicleList() {
             </thead>
             <tbody className="divide-y divide-border">
               {filteredVehicles.map((vehicle) => (
-                <tr className="transition hover:bg-muted/40" key={vehicle.id}>
+                <tr className="transition hover:bg-muted/40" key={vehicle.id} onClick={() => router.push(`/station/vehicles/${vehicle.id}` as Route)}>
                   <td className={tableCellClassName}>
                     <div className="font-semibold text-foreground">
                       {vehicle.make} {vehicle.model}
