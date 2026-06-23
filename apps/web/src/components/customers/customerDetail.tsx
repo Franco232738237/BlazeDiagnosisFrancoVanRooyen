@@ -97,7 +97,11 @@ export default function CustomerDetailPage() {
     );
 
   const fullName = `${customer.name} ${customer.surname}`;
-
+//This component renders a full Customer Detail page that shows a header with navigation back to the customer list, the customer’s name,
+//  and an archived badge when applicable, along with an Edit button for active customers. It displays a detailed customer information 
+//  card including contact details, address, date of birth, and audit timestamps. The right side of the layout lists all related vehicles, 
+// jobs, and quotes, each section showing a count and either a “no items found” message or a styled list of entries with key details such 
+//   as vehicle make/model, job title and status, and quote reference and total amount.
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-10 bg-[#0ea5e9] text-white min-h-screen">
       {/* Header */}
