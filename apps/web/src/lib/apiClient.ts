@@ -84,13 +84,12 @@ export async function updateCustomer(customerId: string, customerData: unknown) 
     errorMessage: 'Failed to update customer profile data.',
   });
 }
-// TODO: Add these functions
-/*export async function deleteCustomer(customerId: string) {
+export async function deleteCustomer(customerId: string) {
   return requestJson<{ id: string; message: string }>(`/api/customers/${customerId}`, {
     method: 'DELETE',
     errorMessage: 'Failed to delete customer.',
   });
-}*/
+}
 
 export async function deleteVehicle(vehicleId: string) {
   return requestJson<{ id: string; message: string }>(`/api/vehicles/${vehicleId}`, {
