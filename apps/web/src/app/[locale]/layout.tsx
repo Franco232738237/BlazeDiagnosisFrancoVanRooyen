@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
+import type { ReactNode } from 'react';
+import { Toaster } from 'sonner';
 import type { LocaleLayoutProps } from '@/types/routes';
 
 import '../globals.css';
@@ -84,6 +86,7 @@ export default async function LocaleLayout({
         <script dangerouslySetInnerHTML={{ __html: brandingInitScript }} />
         <NextIntlClientProvider messages={messages}>
           {children}
+          <Toaster position="top-right" richColors />
         </NextIntlClientProvider>
       </body>
     </html>

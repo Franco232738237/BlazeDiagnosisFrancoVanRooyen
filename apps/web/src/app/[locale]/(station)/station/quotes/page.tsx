@@ -1,7 +1,7 @@
 import { FileText } from 'lucide-react';
 
 import { AppShell } from '@/components/common/appShell';
-import { QuoteBuilder } from '@/components/quotes';
+import { QuoteBuilder } from '@/features/quotes/components/quote-builder';
 import { Button } from '@/components/ui/button';
 
 export default function StationQuotesPage() {
@@ -21,3 +21,4 @@ export default function StationQuotesPage() {
     </AppShell>
   );
 }
+
