@@ -59,13 +59,11 @@ export function CustomerDetail({ customerId }: CustomerDetailProps) {
     );
   }
 
-  const fullName = ${customer.firstName ?? ''} ${customer.lastName ?? ''}.trim() || 'Unnamed customer';
-
   return (
     <Card>
       <CardHeader className="gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <CardTitle>{fullName}</CardTitle>
+          <CardTitle>Customer Details</CardTitle>
           <CardDescription>
             {customer.email ?? 'No email'} • {customer.phone ?? 'No phone'}
           </CardDescription>
