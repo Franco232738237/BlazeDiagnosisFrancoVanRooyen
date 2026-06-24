@@ -20,7 +20,13 @@ export async function createVehicle(
     const [existingVin] = await db
       .select()
       .from(vehicles)
-      .where(and(eq(vehicles.tenantId, tenantId), eq(vehicles.vin, input.vin)))
+      .where(
+          and(
+              eq(vehicles.tenantId, tenantId),
+              eq(vehicles.vin, input.vin),
+              eq(vehicles.isArchived, false)
+          )
+      )
       .limit(1);
 
     if (existingVin) {
@@ -36,6 +42,7 @@ export async function createVehicle(
         and(
           eq(vehicles.tenantId, tenantId),
           eq(vehicles.registrationNumber, input.registrationNumber),
+          eq(vehicles.isArchived, false)
         ),
       )
       .limit(1);
@@ -145,13 +152,13 @@ export async function updateVehicle(
         transmission: input.transmission,
         vin: input.vin,
         year: input.year,
-        updatedAt: new Date(), // track update timestamp
+        updatedAt: new Date(),
       })
       .where(
         and(
           eq(vehicles.id, vehicleId), 
           eq(vehicles.tenantId, tenantId),
-          eq(vehicles.isArchived, false) // can't update archived vehicles
+          eq(vehicles.isArchived, false) 
         )
       )
       .returning();
