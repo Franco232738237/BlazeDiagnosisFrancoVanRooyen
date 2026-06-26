@@ -59,6 +59,13 @@ Ruvan: *Individual Contributions:*
    * Did research and gatherd information for Pod 8 tasks
    * And reviewed PRs and commented security flaws and merged PRs 
 
+#73 and reviewed and merged 
+* Repository security review 
+* updated security checlist
+* Security risk review and recommendations
+* customers facing risk surface 
+* Repository secret audits
+
 # Gerrit Dry
 * BlazeDiagnosis: Week 4 Final MVP Handover & Completion Report
 * Date: June 26, 2026
