@@ -1,4 +1,4 @@
-# Version 2: JW Blignaut 
+#  JW Blignaut 
 # BlazeDiagnosis: Week 4 Final MVP Handover & Completion Report
 *Date:* June 26, 2026
 *Project:* BlazeDiagnosis Monorepo
@@ -50,3 +50,11 @@ npm run dev
  1. *Formally Bridge Pod Pipelines:* Coordinate an immediate architecture sync between Pod 2 and Pod 3 to link the actual frontend panels with the upcoming live jobs database tables, completely replacing our current silent mock exceptions.
  2. *Strip Out Mock Credentials:* Replace the developer fallback profiles in session.ts with an active production identity broker (such as NextAuth or Clerk) to enforce real credential hashing.
  3. *Deploy Automated Integration Testing:* Configure automated end-to-end framework test cases using Playwright to execute the complete multi-step staff demo sequence before branch integrations.
+
+## Induvidual reflection   
+Ruvan: *Individual Contributions:*
+   * Led the refactoring and modernization of core station frontend views, migrating routing layouts to Next.js async parameters to prevent hydration mismatches.
+   * Engineered the normalization of backend API endpoints, successfully breaking up broken collection queries into clean, isolated lookup paths under /api/vehicles/customer/[id].
+   * Implemented structural UI cleanup routines within the workspace, safely decommissioning and purging deprecated interface fragments to reduce bundle overhead.
+   * Did research and gatherd information for Pod 8 tasks
+   * And reviewed PRs and commented security flaws and merged PRs 
