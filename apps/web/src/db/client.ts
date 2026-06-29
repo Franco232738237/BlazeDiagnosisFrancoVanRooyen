@@ -5,8 +5,7 @@ import { Pool } from 'pg';
 
 import * as schema from './schema';
 
-const databaseUrl = process.env.DATABASE_URL || 'postgresql://mock_user:mock_pass@localhost:5432/mock_db';
-
+const databaseUrl = process.env.DATABASE_URL;
 
 if (!databaseUrl) {
   throw new Error(
