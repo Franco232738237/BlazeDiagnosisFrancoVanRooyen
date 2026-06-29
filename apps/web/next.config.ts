@@ -10,9 +10,6 @@ const nextConfig = {
     '127.0.0.1:3000',
     process.env.NODE_ENV === 'development' ? '*:*' : ''
   ].filter(Boolean),
-  typescript: {
-    ignoreBuildErrors: true,
-  },
 };
 
 export default withNextIntl(nextConfig);

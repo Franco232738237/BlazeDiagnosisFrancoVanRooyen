@@ -13,7 +13,6 @@ if (!databaseUrl) {
   );
 }
 
-
 const pool = new Pool({
   connectionString: databaseUrl,
 });
