@@ -1,16 +1,50 @@
-import { AppShell } from '@/components/common/appShell';
-import { PlaceholderCard } from '@/components/common/placeholderCard';
+import type { Route } from 'next';
+import Link from 'next/link';
+import { PackagePlus } from 'lucide-react';
 
-export default function Page() {
+import { AppShell } from '@/components/common/appShell';
+import {
+  FeatureChecklist,
+  FeatureMetricGrid,
+  FeatureRecordList,
+} from '@/components/common/featureDashboard';
+import { Button } from '@/components/ui/button';
+import { stationChecklist, stationPartsRecords } from '@/lib/sampleWorkflows';
+
+export default function StationPartsPage() {
   return (
     <AppShell
-      description="Parts requests, supplier responses, ETA tracking, and delivery dependency visibility."
+      actions={
+        <Button asChild variant="accent">
+          <Link href={'/en/station/quotes/new' as Route}>
+            <PackagePlus className="size-4" />
+            Build quote
+          </Link>
+        </Button>
+      }
+      description="Parts requests, supplier responses, ETA tracking, compatible fitment, and delivery dependency visibility."
       surface="station"
       title="Parts"
     >
-      <PlaceholderCard
-        description="This screen has been restyled and reserved for the MVP service implementation."
-        title="Parts workflow"
+      <FeatureMetricGrid
+        items={[
+          { description: 'Sent to suppliers', label: 'Open requests', value: '7' },
+          { description: 'Ready for comparison', label: 'Supplier responses', value: '5' },
+          { description: 'Customer completion risk', label: 'Delayed ETAs', value: '2' },
+          { description: 'Delivered today', label: 'Received parts', value: '4' },
+        ]}
+      />
+
+      <FeatureRecordList
+        description="Stations can see compatible parts, compare supplier responses, and identify ETA risks that affect customers."
+        items={stationPartsRecords}
+        title="Parts workflow queue"
+      />
+
+      <FeatureChecklist
+        description="Next work should connect this queue to vehicle fitment, supplier responses, and delivery status events."
+        items={stationChecklist}
+        title="Parts implementation checklist"
       />
     </AppShell>
   );

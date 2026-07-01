@@ -1,54 +1,58 @@
-# Blaze POS MVP
+# Blaze Diagnostics
 
-Blaze POS is a white-label SaaS platform for vehicle service stations, mechanics, customers, parts suppliers, and platform administrators.
+Blaze Diagnostics is a white-label SaaS platform for South African vehicle service stations, mechanics, customers, parts suppliers, and platform administrators.
 
-This repository is an MVP starter scaffold for the vertical slice:
+The app is being moved from MVP/student prototype status toward production readiness.
 
-Tenant -> Auth -> Customer -> Vehicle -> Job Card -> Quote -> Customer Approval -> Parts Request -> Supplier Response -> Invoice -> Notification -> Audit Log
+## Product scope
 
-## Current scaffold status
+Core production workflows:
 
-The root-level `frontend/` app has been consolidated into `apps/web`. Reusable UI lives in `apps/web/src/components`, and reusable web utilities live in `apps/web/src/lib`.
+- Tenant setup and white-label branding
+- Role-based authentication and authorization
+- Customer and vehicle management
+- Customer + vehicle intake wizard
+- Job cards and workshop workflow
+- Quote builder and customer approvals
+- Branded quotes and invoices
+- Parts requests and supplier responses
+- Parts delivery tracking
+- Customer/station/supplier communication
+- Audit logs, reporting, and SaaS administration
 
+## Tech stack
 
-Implemented in this starter:
-
-- pnpm workspace layout
-- Next.js App Router structure
-- TypeScript strict configuration
-- Tailwind CSS v4-style global import
-- shadcn/ui-compatible component paths
-- Drizzle ORM PostgreSQL configuration
-- Domain-split database schema files
-- Tenant-aware service function skeletons
-- Authorization guard skeletons
-- Core quote approval and labor recalculation pure functions
-- Dashboard route placeholders for customer, station, supplier, and platform admin
-- Documentation for remaining MVP features and functions
-
-Not implemented yet:
-
-- Production authentication provider
-- Real session persistence
-- Database migrations generated from Drizzle Kit
-- File storage provider
-- Email/SMS/WhatsApp delivery adapters
-- Payment gateway integration
-- Production deployment configuration
-
-## Prerequisites
-
-- Node.js 20.9 or newer
-- pnpm
+- pnpm workspace
+- Next.js App Router
+- TypeScript
+- Tailwind CSS
+- shadcn/ui-compatible component layout
+- Drizzle ORM
 - PostgreSQL
+- Prettier with organized imports
+
+## Repository structure
+
+```txt
+apps/
+  web/                  Main Next.js application
+packages/
+  shared/               Shared package placeholder
+docs/
+  active/               Current production development documentation
+  archive/              Completed MVP, internship, POD, and legacy docs
+  standards/            Documentation standards
+  templates/            Issue, PR, feature, and progress templates
+  training/             Intern training material still useful going forward
+```
 
 ## Setup
 
 ```bash
 pnpm install
 cp apps/web/.env.example apps/web/.env.local
-pnpm --filter @blaze-pos/web db:generate
-pnpm --filter @blaze-pos/web db:migrate
+pnpm --filter @blaze-diagnostics/web db:generate
+pnpm --filter @blaze-diagnostics/web db:migrate
 pnpm dev
 ```
 
@@ -60,27 +64,61 @@ pnpm build
 pnpm lint
 pnpm format
 pnpm typecheck
+pnpm test:web
 ```
 
-## Documentation map
+## Active documentation
 
-- `docs/00-implementation-sequence.md` - recommended build order
-- `docs/01-mvp-status-tracker.md` - module checklist
-- `docs/02-feature-function-backlog.md` - functions and services still needed
-- `docs/03-development-standards.md` - engineering conventions
-- `docs/04-acceptance-criteria.md` - MVP acceptance criteria
-- `docs/05-env-and-runbook.md` - local setup and operations notes
-- `docs/06-risk-register.md` - known risks and mitigations
+Start here:
 
-- `docs/07-week-2-to-4-planning/WEEK_2_TO_4_MVP_DELIVERY_PLAN.md` - accelerated intern delivery plan for completing the MVP
-- `docs/07-week-2-to-4-planning/MVP_SCOPE_CUTLINE.md` - must-have, should-have, and post-MVP scope control
-- `docs/07-week-2-to-4-planning/STUDENT_PODS_AND_OWNERSHIP.md` - pod structure and task ownership rules
-- `docs/08-github-issue-packs/WEEK_2_ISSUES.md` - GitHub issues to create for Week 2
-- `docs/08-github-issue-packs/WEEK_3_ISSUES.md` - GitHub issues to create for Week 3
-- `docs/08-github-issue-packs/WEEK_4_ISSUES.md` - GitHub issues to create for Week 4
+- `docs/README.md` - documentation index
+- `docs/active/00-production-readiness-roadmap.md` - roadmap to production
+- `docs/active/01-current-repo-cleanup-log.md` - cleanup completed and remaining cleanup
+- `docs/active/02-development-workstreams.md` - workstreams by discipline
+- `docs/active/03-intern-task-allocation.md` - group-specific intern workload
+- `docs/active/04-feature-implementation-checklists.md` - feature checklists
+- `docs/active/05-code-refactor-backlog.md` - refactor backlog
+- `docs/active/06-documentation-backlog.md` - docs still required
+- `docs/active/07-release-readiness-checklist.md` - production release gates
+- `docs/active/08-vehicle-fitment-and-parts-catalog.md` - SA fitment and parts catalog plan
+- `docs/active/09-api-and-data-contracts.md` - API standardization plan
+- `docs/active/10-quality-security-cloud-gates.md` - QA/security/cloud gates
+- `docs/active/13-current-application-state.md` - latest route/page and blocker snapshot
+- `docs/active/14-forward-development-plan.md` - forward development gates and sprint plan
+- `docs/active/15-production-documentation-plan.md` - documentation still required for production
+- `docs/active/16-page-readiness-matrix.md` - page-by-page readiness tracker
+- `docs/active/17-github-issue-breakdown.md` - GitHub issue backlog for interns
 
-- `docs/10-component-consolidation/COMPONENT_MIGRATION.md` - component/lib consolidation and migrated frontend page notes
+## Current development status
+
+The latest cleanup and implementation passes have:
+
+- moved invoice pages back into the shared station layout,
+- replaced MVP placeholder screens with basic usable surfaces,
+- fixed placeholder-only station customer and vehicle detail pages that blocked `next build`,
+- added active planning docs for the next production development phase.
+
+Before new feature development, run:
+
+```bash
+pnpm install
+pnpm lint
+pnpm typecheck
+pnpm build
+```
+
+Log any failures as GitHub issues and link them to the relevant active docs.
+
+## Documentation archive
+
+Completed MVP, intern, POD, and legacy documents have been moved to `docs/archive/`.
+
+Archived documents are preserved for reference but should not be used as the active implementation plan unless explicitly reopened.
 
 ## Architectural rule
 
 Every tenant-owned operation must include a server-side tenant authorization check before reading or mutating data.
+
+## Development rule
+
+Do not build new production features on demo-only or localStorage-only workflows. New work should use database-backed services, typed API contracts, tenant-aware authorization, and production documentation updates.

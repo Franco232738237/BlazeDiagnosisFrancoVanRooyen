@@ -48,14 +48,14 @@ Run this command from the root directory (\BlazeDiagnosis) of the project:
 
 PowerShell
 ```
-$env:DATABASE_URL="postgres://YOUR_USERNAME:YOUR_PASSWORD@localhost:5432/YOUR_DB_NAME"; pnpm --filter @blaze-pos/web db:seed
+$env:DATABASE_URL="postgres://YOUR_USERNAME:YOUR_PASSWORD@localhost:5432/YOUR_DB_NAME"; pnpm --filter @blaze-diagnostics/web db:seed
 ```
 3. Verify via Drizzle Studio (Optional)
 If you want to view the raw database tables visually without opening the web application interface:
 
 PowerShell
 ```
-pnpm --filter @blaze-pos/web db:studio
+pnpm --filter @blaze-diagnostics/web db:studio
 ```
  Chrome/Chromium Security Tip: If Drizzle Studio spins infinitely, open "Site Information" in your browser URL address bar and 
 ensure "Local network access" is toggled to Allow.

@@ -1,6 +1,6 @@
 import type { ApiResponse } from '@/types/api';
 import type { Customer } from '@/types/customers';
-import { VehicleRecord } from '@/types/vehicles';
+import type { VehicleRecord } from '@/types/vehicles';
 
 type RequestOptions = RequestInit & {
   errorMessage?: string;
@@ -29,9 +29,14 @@ export async function fetchCustomers(query?: string) {
 }
 
 export async function fetchCustomerById(customerId: string) {
-  return requestJson<Customer>(`/api/customers/${customerId}`, {
-    errorMessage: 'Failed to fetch customer profile detail records.',
-  });
+  const data = await requestJson<{ customer: Customer }>(
+    `/api/customers/${customerId}`,
+    {
+      errorMessage: 'Failed to fetch customer profile detail records.',
+    },
+  );
+
+  return data.customer;
 }
 
 export async function fetchVehiclesForCustomer(customerId: string) {
@@ -49,7 +54,7 @@ export async function fetchCustomerIntakeHistory(customerId:string)
 }
 
 export async function createCustomerVehicleIntake(intakeData: unknown) {
-  return requestJson<{ intake: unknown }>("/api/customer-intakes", {
+  return requestJson<{ intake: unknown }>('/api/customer-intakes', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(intakeData),

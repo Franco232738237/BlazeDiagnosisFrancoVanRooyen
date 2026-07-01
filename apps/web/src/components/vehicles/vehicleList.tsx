@@ -1,9 +1,8 @@
 'use client';
 
-import { requestJson, deleteVehicle } from '@/lib/apiClient';
+import type { Route } from 'next';
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';
-
 
 import { StatusBadge } from '@/components/common/statusBadge';
 import {
@@ -20,9 +19,8 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-
+import { deleteVehicle, requestJson } from '@/lib/apiClient';
 import type { VehicleRecord } from '@/types/vehicles';
-import type { Route } from 'next';
 
 const statusTone: Record<
   VehicleRecord['status'],
@@ -34,28 +32,36 @@ const statusTone: Record<
 };
 
 export function VehicleList() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [vehicles, setVehicles] = useState<VehicleRecord[]>([]); // added
-  const [loading, setLoading] = useState(true); // added
-  const [error, setError] = useState<string | null>(null); //added
+  const params = useParams<{ locale?: string }>();
   const router = useRouter();
-  
-  const handleDelete = async (id: string) => {
-  if (!confirm('Archive this vehicle?')) return;
-  try {
-    await deleteVehicle(id);
-    setVehicles((current) => current.filter((v) => v.id !== id));
-  } catch (err) {
-    setError(err instanceof Error ? err.message : 'Failed to delete vehicle.');
-  }
-};
+  const locale = params.locale ?? 'en';
 
-  // added: fetch real vehicles on mount
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [vehicles, setVehicles] = useState<VehicleRecord[]>([]);
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Archive this vehicle?')) return;
+
+    try {
+      await deleteVehicle(id);
+      setVehicles((current) => current.filter((vehicle) => vehicle.id !== id));
+    } catch (deleteError) {
+      setError(
+        deleteError instanceof Error
+          ? deleteError.message
+          : 'Failed to delete vehicle.',
+      );
+    }
+  };
+
   useEffect(() => {
     const loadVehicles = async () => {
       try {
         setLoading(true);
         setError(null);
+
         const data = await requestJson<{ vehicles: VehicleRecord[] }>(
           '/api/vehicles',
           {
@@ -63,14 +69,17 @@ export function VehicleList() {
           },
         );
         setVehicles(data.vehicles);
-      } catch (err) {
+      } catch (fetchError) {
         setError(
-          err instanceof Error ? err.message : 'Failed to load vehicles.',
+          fetchError instanceof Error
+            ? fetchError.message
+            : 'Failed to load vehicles.',
         );
       } finally {
         setLoading(false);
       }
     };
+
     void loadVehicles();
   }, []);
 
@@ -112,7 +121,7 @@ export function VehicleList() {
         <CardContent className="flex flex-col items-start gap-3 pt-6">
           <p className="text-sm text-destructive">{error}</p>
           <button
-            className="text-sm underline text-muted-foreground hover:text-foreground"
+            className="text-sm text-muted-foreground underline hover:text-foreground"
             onClick={() => window.location.reload()}
             type="button"
           >
@@ -133,25 +142,24 @@ export function VehicleList() {
             or status.
           </CardDescription>
         </div>
-        <div className="w-full md:max-w-sm">
+        <div className="relative w-full md:max-w-sm">
           <Input
             aria-label="Search vehicles"
+            className="pr-8"
             onChange={(event) => setSearchQuery(event.target.value)}
             placeholder="Search registration, VIN, make..."
             value={searchQuery}
-            className="pr-8" //Added padding
           />
-          {searchQuery && (
+          {searchQuery ? (
             <button
-              onClick={() => setSearchQuery('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground text-sm"
-              type="button"
               aria-label="Clear search"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-sm text-muted-foreground hover:text-foreground"
+              onClick={() => setSearchQuery('')}
+              type="button"
             >
-              ✕
-              </button>
-            )}
-            {/* Added a reset button to clear the search bar*/}
+              ×
+            </button>
+          ) : null}
         </div>
       </CardHeader>
       <CardContent>
@@ -169,11 +177,20 @@ export function VehicleList() {
                 <th className={tableCellClassName}>VIN</th>
                 <th className={tableCellClassName}>Fuel</th>
                 <th className={tableCellClassName}>Status</th>
+                <th className={tableCellClassName}>Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {filteredVehicles.map((vehicle) => (
-                <tr className="transition hover:bg-muted/40" key={vehicle.id} onClick={() => router.push(`/station/vehicles/${vehicle.id}` as Route)}>
+                <tr
+                  className="cursor-pointer transition hover:bg-muted/40"
+                  key={vehicle.id}
+                  onClick={() =>
+                    router.push(
+                      `/${locale}/station/vehicles/${vehicle.id}` as Route,
+                    )
+                  }
+                >
                   <td className={tableCellClassName}>
                     <div className="font-semibold text-foreground">
                       {vehicle.make} {vehicle.model}
@@ -202,12 +219,15 @@ export function VehicleList() {
                   <td className={tableCellClassName}>
                     <button
                       className="text-xs text-destructive hover:underline"
-                      onClick={(e) => { e.stopPropagation(); void handleDelete(vehicle.id); }}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        void handleDelete(vehicle.id);
+                      }}
                       type="button"
                     >
                       Delete
                     </button>
-                </td>
+                  </td>
                 </tr>
               ))}
             </tbody>

@@ -1,6 +1,7 @@
 'use client';
 
 import type { Route } from 'next';
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
 import { StatusBadge } from '@/components/common/statusBadge';
@@ -18,10 +19,8 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { fetchCustomers } from '@/lib/apiClient';
+import { deleteCustomer, fetchCustomers } from '@/lib/apiClient';
 import type { Customer } from '@/types/customers';
-import { useRouter } from 'next/navigation';
-import { deleteCustomer } from '@/lib/apiClient';
 
 function getCustomerName(customer: Customer) {
   const name = `${customer.firstName ?? ''} ${customer.lastName ?? ''}`.trim();
@@ -29,21 +28,30 @@ function getCustomerName(customer: Customer) {
 }
 
 export function CustomerList() {
+  const params = useParams<{ locale?: string }>();
+  const router = useRouter();
+  const locale = params.locale ?? 'en';
+
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState('');
-  const router = useRouter();
 
   const handleDelete = async (id: string) => {
-  if (!confirm('Archive this customer?')) return;
-  try {
-    await deleteCustomer(id);
-    setCustomers((current) => current.filter((c) => c.id !== id));
-  } catch (err) {
-    setError(err instanceof Error ? err.message : 'Failed to delete customer.');
-  }
-};
+    if (!confirm('Archive this customer?')) return;
+
+    try {
+      await deleteCustomer(id);
+      setCustomers((current) => current.filter((customer) => customer.id !== id));
+    } catch (deleteError) {
+      setError(
+        deleteError instanceof Error
+          ? deleteError.message
+          : 'Failed to delete customer.',
+      );
+    }
+  };
+
   useEffect(() => {
     const loadCustomers = async () => {
       try {
@@ -132,15 +140,18 @@ export function CustomerList() {
                 <th className={tableCellClassName}>Email</th>
                 <th className={tableCellClassName}>Phone</th>
                 <th className={tableCellClassName}>Status</th>
+                <th className={tableCellClassName}>Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {filteredCustomers.map((customer) => (
                 <tr
-                  className=" cursor-pointer transition hover:bg-muted/40"
+                  className="cursor-pointer transition hover:bg-muted/40"
                   key={customer.id}
                   onClick={() =>
-                    router.push(`/station/customers/${customer.id}` as Route)
+                    router.push(
+                      `/${locale}/station/customers/${customer.id}` as Route,
+                    )
                   }
                 >
                   <td
@@ -168,7 +179,10 @@ export function CustomerList() {
                   <td className={tableCellClassName}>
                     <button
                       className="text-xs text-destructive hover:underline"
-                      onClick={(e) => { e.stopPropagation(); void handleDelete(customer.id); }}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        void handleDelete(customer.id);
+                      }}
                       type="button"
                     >
                       Delete

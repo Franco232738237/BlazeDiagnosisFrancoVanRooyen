@@ -3,7 +3,13 @@
 import { useMemo, useSyncExternalStore } from 'react';
 
 import { StatusBadge } from '@/components/common/statusBadge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { formatMoney } from '@/lib/formatting/money';
 import {
   getTenantBrandingServerSnapshot,
@@ -12,14 +18,31 @@ import {
 } from '@/lib/tenantBranding';
 import type { TenantBranding } from '@/types/tenantBranding';
 
+export type BrandedDocumentPreviewItem = {
+  description: string;
+  quantity: number;
+  totalCents: number;
+  unitPriceCents: number;
+};
+
 export type BrandedDocumentPreviewProps = {
   documentType?: 'quote' | 'invoice';
+  items?: BrandedDocumentPreviewItem[];
+  reference?: string;
+  status?: string;
+  title?: string;
   total?: number;
+  totalCents?: number;
 };
 
 export function BrandedDocumentPreview({
   documentType = 'quote',
+  items = [],
+  reference,
+  status,
+  title,
   total = 2242.5,
+  totalCents,
 }: BrandedDocumentPreviewProps) {
   const snapshot = useSyncExternalStore(
     subscribeToTenantBranding,
@@ -27,9 +50,14 @@ export function BrandedDocumentPreview({
     getTenantBrandingServerSnapshot,
   );
   const branding = useMemo(() => JSON.parse(snapshot) as TenantBranding, [snapshot]);
-  const documentNumber = documentType === 'quote'
-    ? `${branding.quotePrefix}-2026-0001`
-    : `${branding.invoicePrefix}-2026-0001`;
+  const documentNumber =
+    reference ??
+    (documentType === 'quote'
+      ? `${branding.quotePrefix}-2026-0001`
+      : `${branding.invoicePrefix}-2026-0001`);
+  const documentTotal = totalCents === undefined ? total : totalCents / 100;
+  const subtotal = documentTotal / 1.15;
+  const tax = documentTotal - subtotal;
 
   return (
     <Card variant="panel">
@@ -78,25 +106,42 @@ export function BrandedDocumentPreview({
               <p>{branding.businessPhone}</p>
               <p>{branding.businessEmail}</p>
               <p>{branding.taxNumber}</p>
+              {title ? (
+                <p className="pt-3 font-semibold text-foreground">{title}</p>
+              ) : null}
             </div>
             <div className="space-y-3 rounded-xl border border-border bg-muted/40 p-4">
               <div className="flex items-center justify-between gap-3">
                 <span className="text-sm text-muted-foreground">Status</span>
                 <StatusBadge tone={documentType === 'quote' ? 'warning' : 'success'}>
-                  {documentType === 'quote' ? 'Draft' : 'Ready'}
+                  {status ?? (documentType === 'quote' ? 'Draft' : 'Ready')}
                 </StatusBadge>
               </div>
+              {items.length > 0 ? (
+                <div className="space-y-2 border-y border-border py-3">
+                  {items.map((item) => (
+                    <div className="flex items-start justify-between gap-3 text-xs" key={item.description}>
+                      <span className="text-muted-foreground">
+                        {item.quantity} × {item.description}
+                      </span>
+                      <span className="font-mono text-foreground">
+                        {formatMoney(item.totalCents / 100)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
               <div className="flex items-center justify-between gap-3 text-sm">
                 <span className="text-muted-foreground">Subtotal</span>
-                <span>{formatMoney(total / 1.15)}</span>
+                <span>{formatMoney(subtotal)}</span>
               </div>
               <div className="flex items-center justify-between gap-3 text-sm">
                 <span className="text-muted-foreground">Tax</span>
-                <span>{formatMoney(total - total / 1.15)}</span>
+                <span>{formatMoney(tax)}</span>
               </div>
               <div className="flex items-center justify-between gap-3 border-t border-border pt-3 text-base font-bold">
                 <span>Total</span>
-                <span>{formatMoney(total)}</span>
+                <span>{formatMoney(documentTotal)}</span>
               </div>
             </div>
           </div>
