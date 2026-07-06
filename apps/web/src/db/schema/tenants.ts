@@ -139,8 +139,77 @@ export const tenantFeatureFlags = pgTable(
   ],
 );
 
+export const tenantMembers = pgTable(
+  'tenant_members',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    tenantId: uuid('tenant_id')
+      .references(() => tenants.id, { onDelete: 'cascade' })
+      .notNull(),
+    userId: text('user_id').notNull(),
+    email: text('email').notNull(),
+    role: varchar('role', { length: 50 }).notNull(),
+    permissions: jsonb('permissions')
+      .$type<string[]>()
+      .notNull()
+      .default([]),
+    status: varchar('status', { length: 20 })
+      .notNull()
+      .default('pending'),
+    invitedAt: timestamp('invited_at', { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    joinedAt: timestamp('joined_at', { withTimezone: true }),
+    lastActiveAt: timestamp('last_active_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    uniqueIndex('tenant_members_unique_idx').on(table.tenantId, table.userId),
+    index('tenant_members_tenant_idx').on(table.tenantId),
+    index('tenant_members_user_idx').on(table.userId),
+    index('tenant_members_status_idx').on(table.status),
+  ],
+);
+
+export const permissionAudits = pgTable(
+  'permission_audits',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    tenantId: uuid('tenant_id')
+      .references(() => tenants.id, { onDelete: 'cascade' })
+      .notNull(),
+    userId: text('user_id').notNull(),
+    resource: text('resource').notNull(),
+    action: text('action').notNull(),
+    permission: text('permission').notNull(),
+    result: varchar('result', { length: 10 }).notNull(),
+    reason: text('reason'),
+    ipAddress: text('ip_address'),
+    userAgent: text('user_agent'),
+    metadata: jsonb('metadata')
+      .$type<Record<string, unknown>>()
+      .notNull()
+      .default({}),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index('permission_audits_tenant_idx').on(table.tenantId),
+    index('permission_audits_user_idx').on(table.userId),
+    index('permission_audits_created_idx').on(table.createdAt),
+    index('permission_audits_result_idx').on(table.result),
+  ],
+);
+
 export const tenantsRelations = relations(tenants, ({ many }) => ({
   domains: many(tenantDomains),
   settings: many(tenantSettings),
   featureFlags: many(tenantFeatureFlags),
+  members: many(tenantMembers),
 }));
