@@ -27,6 +27,7 @@
     "class-variance-authority": "latest",
     "clsx": "latest",
     "drizzle-orm": "^0.45.2",
+    "jose": "^6.2.3",
     "lucide-react": "^1.21.0",
     "next": "latest",
     "next-intl": "latest",

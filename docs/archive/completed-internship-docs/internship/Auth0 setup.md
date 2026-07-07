@@ -56,6 +56,8 @@ pnpm --filter @blaze-diagnostics/web db:migrate
 pnpm dev
 ```
 
+> For Auth0 integration, set `AUTH0_DOMAIN` and `AUTH0_AUDIENCE` in `apps/web/.env.local` to match your Auth0 tenant and API audience.
+
 ## Workspace scripts
 
 ```bash

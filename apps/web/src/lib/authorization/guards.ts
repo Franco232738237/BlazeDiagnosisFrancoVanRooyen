@@ -1,6 +1,7 @@
 import type { Permission } from '@/lib/constants/roles';
 
 import { requireUser } from '../auth/session';
+import { auditTenantPermissionCheck } from '@/lib/auth/audit';
 
 export async function requirePermission(permission: Permission) {
   const user = await requireUser();
@@ -31,12 +32,40 @@ export async function requireTenantPermission(
   tenantId: string,
   permission: Permission,
 ) {
-  const user = await requirePermission(permission);
+  const user = await requireUser();
+  const hasPermission = user.permissions.includes(permission);
   const isPlatformAdmin = user.permissions.includes('platform.tenants.manage');
+  const membership = user.tenantMemberships?.find(
+    (item) => item.tenantId === tenantId,
+  );
+  const isTenantMember = membership?.status === 'active';
+  const hasTenantScope = isPlatformAdmin || user.activeTenantId === tenantId || isTenantMember;
 
-  if (!isPlatformAdmin && user.activeTenantId !== tenantId) {
-    throw new Error('Cross-tenant access denied.');
+  if (!hasPermission || !hasTenantScope) {
+    await auditTenantPermissionCheck({
+      tenantId,
+      userId: user.id,
+      resource: 'unknown',
+      action: 'unknown',
+      permission,
+      result: 'denied',
+      reason: !hasPermission
+        ? 'missing_permission'
+        : 'tenant_scope_mismatch',
+    });
+
+    throw new Error('Cross-tenant access denied or missing permission.');
   }
+
+  await auditTenantPermissionCheck({
+    tenantId,
+    userId: user.id,
+    resource: 'unknown',
+    action: 'unknown',
+    permission,
+    result: 'allowed',
+    reason: 'permission_granted',
+  });
 
   return user;
 }

@@ -9,7 +9,6 @@ export type TenantContext = {
   source: 'session' | 'host' | 'platform_override';
 };
 
-// ✅ Resolves tenant from session or host header
 export async function resolveTenantFromRequest(): Promise<TenantContext | null> {
   const user = await requireUser().catch(() => null);
 
@@ -27,8 +26,6 @@ export async function resolveTenantFromRequest(): Promise<TenantContext | null> 
     return null;
   }
 
-  // TODO: Resolve tenant from tenant_domains table using host.
-  // Did the Resolve tenant from tenant domains.
   const match = await db
     .select()
     .from(tenantDomains)
@@ -41,19 +38,19 @@ export async function resolveTenantFromRequest(): Promise<TenantContext | null> 
       source: 'host',
     };
   }
+
   return null;
 }
 
-// ✅ Safe tenant context enforcement with dev fallback
 export async function requireTenantContext(): Promise<TenantContext> {
   const tenant = await resolveTenantFromRequest();
 
   if (!tenant) {
-    // Development fallback for local testing
     if (process.env.NODE_ENV === 'development') {
       console.warn('⚠️ No tenant found — using dev fallback tenant.');
       return {
-        tenantId: '00000000-0000-0000-0000-000000000001',
+        tenantId: process.env.MOCK_TENANT_ID ??
+          '00000000-0000-0000-0000-000000000001',
         source: 'platform_override',
       };
     }
@@ -64,7 +61,6 @@ export async function requireTenantContext(): Promise<TenantContext> {
   return tenant;
 }
 
-// ✅ Cross-tenant access guard
 export function assertSameTenant(
   resourceTenantId: string,
   context: TenantContext,
