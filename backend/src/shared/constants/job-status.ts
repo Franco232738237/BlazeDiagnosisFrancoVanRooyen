@@ -1,0 +1,19 @@
+export const JOB_STATUSES = [
+  'DRAFT',
+  'AWAITING_INSPECTION',
+  'QUOTATION_IN_PROGRESS',
+  'AWAITING_CUSTOMER_APPROVAL',
+  'APPROVED',
+  'IN_PROGRESS',
+  'WAITING_FOR_PARTS',
+  'PARTS_RECEIVED',
+  'COMPLETED',
+  'INVOICED',
+  'PAID',
+  'READY_FOR_COLLECTION',
+  'COLLECTED',
+  'CLOSED',
+  'CANCELLED'
+] as const;
+
+export type JobStatus = (typeof JOB_STATUSES)[number];
